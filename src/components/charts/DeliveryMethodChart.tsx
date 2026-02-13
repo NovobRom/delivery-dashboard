@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, LabelList } from 'recharts';
 import { GlassCard } from '@/components/common/GlassCard';
 import { useTranslation } from 'react-i18next';
 import { calculateDeliveryMethodBreakdown } from '@/utils/calculations';
@@ -40,8 +40,19 @@ export const DeliveryMethodChart: React.FC<Props> = ({ data }) => {
                             dataKey="value"
                         >
                             {chartData.map((_, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                <Cell
+                                    key={`cell-${index}`}
+                                    fill={COLORS[index % COLORS.length]}
+                                />
                             ))}
+                            <LabelList
+                                dataKey="value"
+                                position="outside"
+                                stroke="none"
+                                fill="#334155"
+                                fontSize={12}
+                                formatter={(val: number) => val > 0 ? val.toLocaleString() : ''}
+                            />
                         </Pie>
                         <Tooltip />
                         <Legend verticalAlign="bottom" height={36} />

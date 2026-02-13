@@ -6,6 +6,10 @@
         "noLocations": "Немає локацій",
         "uploadButton": "Завантажити CSV/Tab файл"
     },
+    "dashboard": {
+        "overview": "Огляд",
+        "subtitle": "Аналітика та показники ефективності"
+    },
     "dateFilter": {
         "allTime": "Весь час",
         "thisMonth": "Цей місяць",
@@ -31,7 +35,9 @@
         "handDelivery": "В руки %",
         "safePlace": "SafePlace %",
         "addressCoverage": "Посилок на адресу",
-        "activeCouriers": "Активні кур'єри"
+        "parcelsPerAddress": "Посилок на адресу",
+        "activeCouriers": "Активні кур'єри",
+        "addresses": "Адреси"
     },
     "charts": {
         "successRateTrend": "Тренд успішності",
@@ -47,7 +53,9 @@
         "regionalComparison": "Порівняння регіонів",
         "courierProductivity": "Теплова карта кур'єрів",
         "volumeTrend": "Динаміка обсягів",
-        "exceptionAnalysis": "Аналіз винятків (Без причини)"
+        "exceptionAnalysis": "Аналіз винятків (Без причини)",
+        "loadedVsAddresses": "Завантажено vs Адреси",
+        "loadedVsAddressesSubtitle": "Щільність посилок на адресу"
     },
     "summary": {
         "title": "Зведення за період",
@@ -77,6 +85,7 @@
     "common": {
         "selectAll": "Обрати всі",
         "noItemsFound": "Немає елементів",
+        "orders": "замовлень",
         "daily": "Денні",
         "weekly": "Тижневі",
         "monthly": "Місячні",

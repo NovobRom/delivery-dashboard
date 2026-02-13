@@ -8,7 +8,7 @@ import { DeliveryMethodChart } from '@/components/charts/DeliveryMethodChart';
 import { RegionalComparisonChart } from '@/components/charts/RegionalComparisonChart';
 import { CourierHeatmap } from '@/components/charts/CourierHeatmap';
 import { VolumeTrendChart } from '@/components/charts/VolumeTrendChart';
-import { ExceptionAnalysis } from '@/components/charts/ExceptionAnalysis';
+import { LoadedVsAddresses } from '@/components/charts/LoadedVsAddresses';
 import { CourierFilter } from '@/components/common/Filters';
 import { getWeekNumber } from '@/utils/date-utils';
 
@@ -139,7 +139,7 @@ const Dashboard: React.FC = () => {
             {/* Charts Section 2: Trends & Heatmap */}
             <div className="grid grid-cols-1 gap-6">
                 <VolumeTrendChart data={displayData} />
-                <ExceptionAnalysis data={displayData} />
+                <LoadedVsAddresses data={displayData} />
                 <CourierHeatmap data={displayData} />
             </div>
         </div>

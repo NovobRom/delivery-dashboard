@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, LabelList } from 'recharts';
 import { GlassCard } from '@/components/common/GlassCard';
 import { useTranslation } from 'react-i18next';
 import { calculateRegionalStats } from '@/utils/calculations';
@@ -16,7 +16,8 @@ export const RegionalComparisonChart: React.FC<Props> = ({ data }) => {
 
     // Take top 10 regions to avoid clutter
     const chartData = stats.slice(0, 10).map(s => ({
-        name: s.region.replace('AdressDelivery-OWN-LT-', '').substring(0, 15), // Shorten name
+        name: s.region.replace('AdressDelivery-OWN-LT-', '').substring(0, 15), // Shorten name for Axis
+        fullName: s.region, // Full name for Tooltip
         successRate: parseFloat(s.successRate.toFixed(1)),
         volume: s.volume
     }));
@@ -35,10 +36,28 @@ export const RegionalComparisonChart: React.FC<Props> = ({ data }) => {
                         <XAxis type="number" domain={[0, 100]} />
                         <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 10 }} />
                         <Tooltip
-                            contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '0.5rem', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                            content={({ active, payload }) => {
+                                if (active && payload && payload.length) {
+                                    const data = payload[0].payload;
+                                    return (
+                                        <div className="bg-white/95 p-3 rounded-lg shadow-lg border border-slate-100">
+                                            <p className="font-semibold text-slate-800 mb-1">{data.fullName}</p>
+                                            <p className="text-sm text-emerald-600">
+                                                {t('common.successRate', 'Success Rate')}: {data.successRate}%
+                                            </p>
+                                            <p className="text-xs text-slate-500">
+                                                {t('common.volume', 'Volume')}: {data.volume}
+                                            </p>
+                                        </div>
+                                    );
+                                }
+                                return null;
+                            }}
                         />
                         <Legend />
-                        <Bar dataKey="successRate" fill="#10b981" name={t('common.successRate', 'Success Rate %')} radius={[0, 4, 4, 0]} barSize={20} />
+                        <Bar dataKey="successRate" fill="#10b981" name={t('common.successRate', 'Success Rate %')} radius={[0, 4, 4, 0]} barSize={20}>
+                            <LabelList dataKey="successRate" position="right" fill="#334155" fontSize={12} formatter={(val: number) => `${val}%`} />
+                        </Bar>
                     </BarChart>
                 </ResponsiveContainer>
             </div>

@@ -68,21 +68,21 @@ export const KPISection: React.FC<KPISectionProps> = ({ data }) => {
             <StatCard
                 title={t('kpi.handDelivery', 'Hand Delivery %')}
                 value={`${handPercent}%`}
-                subtext={`${breakdown.hand.toLocaleString()} orders`}
+                subtext={`${breakdown.hand.toLocaleString()} ${t('common.orders', 'orders')}`}
                 icon={Icons.Check}
                 colorClass="bg-indigo-500 text-indigo-500"
             />
             <StatCard
                 title={t('kpi.safePlace', 'SafePlace %')}
                 value={`${safePlacePercent}%`}
-                subtext={`${breakdown.safeplace.toLocaleString()} orders`}
+                subtext={`${breakdown.safeplace.toLocaleString()} ${t('common.orders', 'orders')}`}
                 icon={Icons.MapPin}
                 colorClass="bg-purple-500 text-purple-500"
             />
             <StatCard
                 title={t('kpi.addressCoverage', 'Addr. Coverage')}
                 value={addressCoverage}
-                subtext="Parcels per address"
+                subtext={t('kpi.parcelsPerAddress', 'Parcels per address')}
                 icon={Icons.Globe}
                 colorClass="bg-cyan-500 text-cyan-500"
             />

@@ -6,6 +6,10 @@
         "noLocations": "No Locations",
         "uploadButton": "Upload CSV/Tab File"
     },
+    "dashboard": {
+        "overview": "Overview",
+        "subtitle": "Analytics and performance metrics"
+    },
     "dateFilter": {
         "allTime": "All Time",
         "thisMonth": "This Month",
@@ -28,10 +32,12 @@
         "noSelection": "No Selection",
         "regionsSelected": "Regions Selected",
         "loaded": "Loaded Parcels",
+        "parcelsPerAddress": "Parcels per address",
         "handDelivery": "Hand Delivery %",
         "safePlace": "SafePlace %",
         "addressCoverage": "Avg Parcels/Address",
-        "activeCouriers": "Active Couriers"
+        "activeCouriers": "Active Couriers",
+        "addresses": "Addresses"
     },
     "charts": {
         "successRateTrend": "Success Rate Trend",
@@ -47,7 +53,9 @@
         "regionalComparison": "Regional Comparison",
         "courierProductivity": "Courier Productivity Heatmap",
         "volumeTrend": "Volume Trend",
-        "exceptionAnalysis": "Exception Analysis (No Reason)"
+        "exceptionAnalysis": "Exception Analysis (No Reason)",
+        "loadedVsAddresses": "Loaded vs Addresses",
+        "loadedVsAddressesSubtitle": "Packages per address density"
     },
     "summary": {
         "title": "Period Summary",
@@ -77,6 +85,7 @@
     "common": {
         "selectAll": "Select All",
         "noItemsFound": "No items found",
+        "orders": "orders",
         "daily": "Daily",
         "weekly": "Weekly",
         "monthly": "Monthly",
