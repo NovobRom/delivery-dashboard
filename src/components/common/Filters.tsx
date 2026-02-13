@@ -1,10 +1,29 @@
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDataStore, useFiltersStore } from '@/store';
+import { MultiSelect } from './MultiSelect';
+import { Icons } from './Icons';
 
-import React from 'react';
+export const CourierFilter: React.FC = () => {
+    const { t } = useTranslation();
+    const { fullData } = useDataStore();
+    const { selectedCouriers, setSelectedCouriers } = useFiltersStore();
 
-export const MultiSelect: React.FC = () => {
-    return <div className="border border-slate-200 rounded px-2 py-1">Regions (MultiSelect Placeholder)</div>;
-};
+    const uniqueCouriers = useMemo(() => {
+        if (!fullData) return [];
+        const couriers = [...new Set(fullData.map(d => d.courier))];
+        return couriers.filter(c => c && c.trim() !== '').sort();
+    }, [fullData]);
 
-export const DateFilter: React.FC = () => {
-    return <div className="border border-slate-200 rounded px-2 py-1">Date Filter Placeholder</div>;
+    if (uniqueCouriers.length === 0) return null;
+
+    return (
+        <MultiSelect
+            options={uniqueCouriers}
+            selected={selectedCouriers}
+            onChange={setSelectedCouriers}
+            label={t('leaderboard.filterCouriers', 'Filter Couriers')}
+            icon={Icons.Users}
+        />
+    );
 };

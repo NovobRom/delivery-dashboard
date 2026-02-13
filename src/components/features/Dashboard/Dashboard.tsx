@@ -9,6 +9,7 @@ import { RegionalComparisonChart } from '@/components/charts/RegionalComparisonC
 import { CourierHeatmap } from '@/components/charts/CourierHeatmap';
 import { VolumeTrendChart } from '@/components/charts/VolumeTrendChart';
 import { ExceptionAnalysis } from '@/components/charts/ExceptionAnalysis';
+import { CourierFilter } from '@/components/common/Filters';
 import { getWeekNumber } from '@/utils/date-utils';
 
 
@@ -107,11 +108,16 @@ const Dashboard: React.FC = () => {
     return (
         <div className="space-y-6 pb-12">
             {/* Header / Intro */}
-            <div>
-                <h2 className="text-2xl font-bold text-slate-800">{t('dashboard.overview', 'Overview')}</h2>
-                <p className="text-slate-500 text-sm">
-                    {t('dashboard.subtitle', 'Analytics and performance metrics')}
-                </p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-gray-100">{t('dashboard.overview', 'Overview')}</h2>
+                    <p className="text-slate-500 dark:text-gray-400 text-sm">
+                        {t('dashboard.subtitle', 'Analytics and performance metrics')}
+                    </p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <CourierFilter />
+                </div>
             </div>
 
             {/* Summary Statistics Panel */}

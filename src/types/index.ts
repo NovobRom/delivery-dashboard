@@ -91,6 +91,7 @@ export interface DataState {
     rawData: string;
     fullData: CourierData[];
     error: string | null;
+    isLoading: boolean;
     setRawData: (data: string) => void;
 }
 

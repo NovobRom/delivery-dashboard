@@ -39,16 +39,16 @@ export const ExceptionAnalysis: React.FC<Props> = ({ data }) => {
 
             <div className="flex items-center gap-4 mb-4 text-sm">
                 <div className="flex flex-col">
-                    <span className="text-slate-500">Total</span>
+                    <span className="text-slate-500">{t('common.total', 'Total')}</span>
                     <span className="font-bold text-red-600">{totalNoReason}</span>
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-slate-500">Avg / Day</span>
+                    <span className="text-slate-500">{t('summary.avgPerDay', 'Avg / Day')}</span>
                     <span className="font-bold text-slate-800">{avgNoReason}</span>
                 </div>
                 {worstDay && (
                     <div className="flex flex-col">
-                        <span className="text-slate-500">Worst Day</span>
+                        <span className="text-slate-500">{t('summary.worstDay', 'Worst Day')}</span>
                         <span className="font-bold text-red-600">{worstDay.date} ({worstDay.noReason})</span>
                     </div>
                 )}

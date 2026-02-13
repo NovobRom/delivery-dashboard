@@ -54,7 +54,10 @@
         "dateRange": "Діапазон дат",
         "medianRate": "Медіана успішності",
         "bestDay": "Найкращий день",
-        "worstDay": "Найгірший день"
+        "worstDay": "Найгірший день",
+        "recordsAnalyzed": "записів проаналізовано",
+        "totalDays": "днів всього",
+        "avgPerDay": "Сер. / День"
     },
     "leaderboard": {
         "title": "Рейтинг кур'єрів",
@@ -82,7 +85,16 @@
         "successRate": "Відсоток успіху",
         "noReason": "Без причини",
         "undelivered": "Не доставлено",
-        "delivered": "Доставлено"
+        "delivered": "Доставлено",
+        "search": "Пошук...",
+        "selectDate": "Оберіть дату",
+        "courier": "Кур'єр"
+    },
+    "status": {
+        "delivered": "Доставлено",
+        "inTransit": "В дорозі",
+        "exception": "Виняток",
+        "pending": "Очікує"
     },
     "footer": {
         "copyright": "Всі права захищені",

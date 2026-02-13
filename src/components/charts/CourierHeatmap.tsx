@@ -47,7 +47,7 @@ export const CourierHeatmap: React.FC<Props> = ({ data }) => {
                 <table className="min-w-full text-xs">
                     <thead>
                         <tr>
-                            <th className="sticky left-0 bg-white z-10 p-2 text-left font-medium text-slate-500 border-b">Courier</th>
+                            <th className="sticky left-0 bg-white z-10 p-2 text-left font-medium text-slate-500 border-b">{t('common.courier', 'Courier')}</th>
                             {dates.map(date => (
                                 <th key={date} className="p-2 font-medium text-slate-500 border-b whitespace-nowrap transform -rotate-45 origin-bottom-left h-24 align-bottom">
                                     {date.substring(0, 5)}

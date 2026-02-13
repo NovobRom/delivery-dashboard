@@ -1,196 +1,145 @@
-# Delivery Dashboard - Refactored Version
+<div align="center">
 
-## 🚀 Про проєкт
+# 📦 Delivery Dashboard
 
-Це рефакторена версія Delivery Dashboard - BI-системи візуалізації для аналізу доставок. Проєкт переписано з монолітного HTML-файлу на модульну архітектуру з TypeScript, React, та сучасним тулінгом.
+**An analytics platform for logistics companies to visualize delivery performance, courier efficiency, and regional trends.**
 
-## ✨ Основні покращення
+*Developed by **Roman Novobranets***
 
-- ✅ **Модульна архітектура** - код розбито на логічні компоненти
-- ✅ **TypeScript** - повна типізація для надійності
-- ✅ **Двомовність** - українська та англійська мови (i18next)
-- ✅ **Zustand** - сучасне управління станом
-- ✅ **Vite** - швидка збірка та розробка
-- ✅ **Tailwind CSS** - гнучкі стилі з glassmorphism дизайном
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-All_Rights_Reserved-red?style=flat-square)]()
 
-## 📋 Передумови
-
-Перед початком роботи потрібно встановити:
-
-- **Node.js** версії 18+ ([завантажити](https://nodejs.org/))
-- **npm** або **yarn** (встановлюється разом з Node.js)
-
-### Перевірка встановлення
-
-```powershell
-node --version  # Має показати v18.x.x або вище
-npm --version   # Має показати 9.x.x або вище
-```
-
-## 🛠️ Встановлення
-
-### Крок 1: Встановлення залежностей
-
-```powershell
-npm install
-```
-
-Ця команда встановить всі необхідні пакети з `package.json`:
-- React 18
-- TypeScript
-- Vite
-- Tailwind CSS
-- Recharts (графіки)
-- Zustand (state management)
-- i18next (інтернаціоналізація)
-- та інші
-
-### Крок 2: Запуск dev-сервера
-
-```powershell
-npm run dev
-```
-
-Додаток автоматично відкриється в браузері за адресою `http://localhost:3000`
-
-## 📁 Структура проєкту
-
-```
-delivery-dashboard/
-├── public/                 # Статичні файли
-├── src/
-│   ├── components/        # React компоненти
-│   │   ├── common/       # Переви використовувані компоненти
-│   │   ├── charts/       # Компоненти графіків
-│   │   ├── layout/       # Компоненти макету
-│   │   └── features/     # Фічі (Dashboard, Leaderboard)
-│   ├── hooks/            # Custom React hooks
-│   ├── utils/            # Утиліти (парсинг, обчислення)
-│   ├── store/            # Zustand stores
-│   ├── config/           # Конфігурація та константи
-│   ├── i18n/             # Переклади (en, uk)
-│   ├── types/            # TypeScript типи
-│   └── styles/           # Глобальні стилі
-├── package.json          # Залежності проєкту
-├── tsconfig.json         # Конфігурація TypeScript
-├── vite.config.ts        # Конфігурація Vite
-└── tailwind.config.js    # Конфігурація Tailwind CSS
-```
-
-## 🎯 Доступні команди
-
-```powershell
-# Запуск dev-сервера з hot-reload
-npm run dev
-
-# Збірка production версії
-npm run build
-
-# Попередній перегляд production збірки
-npm run preview
-
-# Перевірка коду (linting)
-npm run lint
-```
-
-## 🌍 Зміна мови
-
-Додаток підтримує 2 мови:
-- 🇬🇧 Англійська (за замовчуванням)
-- 🇺🇦 Українська
-
-Мова зберігається в localStorage та автоматично відновлюється при наступному відвідуванні.
-
-Файли перекладів знаходяться в:
-- `src/i18n/locales/en.json` - англійська
-- `src/i18n/locales/uk.json` - українська
-
-## 📊 Функціонал
-
-### Поточні можливості
-- ✅ Завантаження CSV/TSV файлів
-- ✅ Автоматичне визначення роздільника
-- ✅ Фільтрація по регіонах
-- ✅ Фільтрація по кур'єрам
-- ✅ Фільтрація по датах (включно з custom range)
-- ✅ Агрегація даних (день/тиждень/місяць)
-- ✅ KPI картки з трендами
-- ✅ Графіки (Area chart, Bar chart)
-- ✅ Таблиця-рейтинг кур'єрів
-- ✅ Responsive дизайн
-- ✅ Glassmorphism UI
-
-### Заплановані покращення
-- ⏳ Backend інтеграція
-- ⏳ Експорт в Excel/PDF
-- ⏳ Додаткові мови (PL, LT, ET)
-- ⏳ PWA підтримка
-- ⏳ Unit тести
-- ⏳ E2E тести
-
-## 🔧 Налаштування
-
-### Зміна порту dev-сервера
-
-Відредагуйте `vite.config.ts`:
-
-```typescript
-server: {
-  port: 5000, // Змініть на потрібний порт
-  open: true,
-},
-```
-
-### Додавання нової мови
-
-1. Створіть файл `src/i18n/locales/[код_мови].json`
-2. Скопіюйте структуру з `en.json`
-3. Перекладіть всі ключі
-4. Додайте мову в `src/i18n/index.ts`
-5. Оновіть `SUPPORTED_LANGUAGES` в `src/config/constants.ts`
-
-## 🐛 Відомі проблеми
-
-- Наразі немає
-
-## 📝 Міграція зі старої версії
-
-Стара версія (`index.html`) залишається в корені проєкту як резервна копія.
-
-### Різниці:
-- ✅ Весь функціонал збережено
-- ✅ Дизайн ідентичний
-- ✅ Додано підтримку мов
-- ✅ Покращена продуктивність
-- ✅ Кращ підтримуваність коду
-
-## 👨‍💻 Розробка
-
-### Додавання нового компонента
-
-1. Створіть файл в `src/components/[категорія]/[НазваКомпонента].tsx`
-2. Визначте типи props в `src/types/index.ts`
-3. Використайте TypeScript для типізації
-4. Додайте переклади в `src/i18n/locales/*.json`
-
-### Додавання нового store
-
-1. Створіть файл в `src/store/slices/[назва]Slice.ts`
-2. Визначте інтерфейс стану в `src/types/index.ts`
-3. Експортуйте з `src/store/index.ts`
-
-## 📄 Ліцензія
-
-© 2026 Roman Novobranets. All rights reserved.
-
-## 🆘 Підтримка
-
-Якщо виникли питання або проблеми:
-1. Перевірте цей README
-2. Перегляньте код в `src/` директорії
-3. Перевірте консоль браузера на помилки
+</div>
 
 ---
 
-**Версія:** 10.0  
-**Останнє оновлення:** 13.02.2026
+## 🔍 Overview
+
+Managing last-mile delivery operations at scale is challenging. Logistics managers need to quickly identify delayed shipments, evaluate courier productivity, and spot underperforming regions — all without drowning in spreadsheets.
+
+**Delivery Dashboard** solves this by transforming raw CSV/TSV data into actionable insights through interactive KPI cards, trend charts, heatmaps, and leaderboards. Upload your daily report, apply filters, and instantly see where your delivery network excels — and where it needs attention.
+
+## ✨ Features
+
+| Feature | Description |
+|---|---|
+| **KPI Cards** | At-a-glance metrics — total parcels, success rate, undelivered exceptions, active couriers |
+| **Dynamic Filtering** | Filter by date range (preset or custom), region, and courier |
+| **Volume Trends** | Area chart tracking daily/weekly/monthly delivery volumes |
+| **Regional Comparison** | Bar chart comparing success rates across all active regions |
+| **Courier Heatmap** | Color-coded matrix revealing courier performance patterns over time |
+| **Exception Analysis** | Identify couriers with the highest "no reason" return rates |
+| **Delivery Methods** | Breakdown of hand-delivery vs. SafePlace vs. undelivered |
+| **Courier Leaderboard** | Sortable table with detailed per-courier statistics |
+| **Period Summary** | Median rate, best/worst day, and date-range statistics |
+| **Dark / Light Mode** | Full dark mode support across all components |
+| **Multi-language** | English 🇬🇧 and Ukrainian 🇺🇦 with i18next |
+| **Glassmorphism UI** | Modern frosted-glass design with smooth animations |
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Framework** | React 18 |
+| **Language** | TypeScript 5.3 |
+| **Bundler** | Vite 5 |
+| **Styling** | Tailwind CSS 3.4 (Glassmorphism design) |
+| **State Management** | Zustand 4 |
+| **Charts** | Recharts 2 |
+| **Icons** | Lucide React |
+| **Internationalization** | i18next + react-i18next |
+| **Data Parsing** | PapaParse (CSV/TSV) |
+| **Validation** | Zod |
+| **Date Utilities** | date-fns |
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js** v18+ — [Download](https://nodejs.org/)
+- **npm** (ships with Node.js)
+
+### Installation
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/NovobRom/delivery-dashboard.git
+cd delivery-dashboard
+
+# 2. Install dependencies
+npm install
+
+# 3. Start the development server
+npm run dev
+```
+
+The app will open at `http://localhost:3000`.
+
+### Available Scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start dev server with HMR |
+| `npm run build` | Type-check and build for production |
+| `npm run preview` | Preview production build locally |
+| `npm run lint` | Run ESLint across the codebase |
+
+## 📁 Project Structure
+
+```
+src/
+├── components/
+│   ├── charts/          # Recharts visualizations
+│   │   ├── CourierHeatmap.tsx
+│   │   ├── DeliveryMethodChart.tsx
+│   │   ├── ExceptionAnalysis.tsx
+│   │   ├── RegionalComparisonChart.tsx
+│   │   └── VolumeTrendChart.tsx
+│   ├── common/          # Reusable UI primitives
+│   │   ├── DateFilter.tsx
+│   │   ├── GlassCard.tsx
+│   │   ├── MultiSelect.tsx
+│   │   ├── StatCard.tsx
+│   │   └── ...
+│   ├── features/        # Feature modules
+│   │   └── Dashboard/
+│   │       ├── Dashboard.tsx
+│   │       ├── KPISection.tsx
+│   │       └── SummaryPanel.tsx
+│   └── layout/          # App shell
+│       ├── Header.tsx
+│       ├── Footer.tsx
+│       └── MainLayout.tsx
+├── config/              # Constants & configuration
+├── i18n/                # Locales (en.json, uk.json)
+├── store/               # Zustand state stores
+├── types/               # TypeScript interfaces
+├── utils/               # Data parsing & calculations
+├── workers/             # Web Workers (planned)
+└── styles/              # Global CSS
+```
+
+## 🔢 Versioning Policy
+
+This project follows **[Semantic Versioning (SemVer)](https://semver.org/)** — `MAJOR.MINOR.PATCH`.
+
+| Bump | When | Example |
+|---|---|---|
+| **Major** (`X.0.0`) | Breaking changes or complete redesigns | Rewritten data pipeline, new incompatible CSV format |
+| **Minor** (`0.Y.0`) | New backward-compatible features | New chart type, additional filter, new language |
+| **Patch** (`0.0.Z`) | Bug fixes & minor improvements | Text corrections, performance tweaks, style fixes |
+
+> **Current version:** `10.0.0`
+
+## 📄 License
+
+© 2026 Roman Novobranets. All rights reserved.
+
+---
+
+<div align="center">
+  <sub>Built with ❤️ by <strong>Roman Novobranets</strong></sub>
+</div>

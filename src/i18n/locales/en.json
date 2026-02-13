@@ -54,7 +54,10 @@
         "dateRange": "Date Range",
         "medianRate": "Median Success Rate",
         "bestDay": "Best Performance Day",
-        "worstDay": "Worst Performance Day"
+        "worstDay": "Worst Performance Day",
+        "recordsAnalyzed": "records analyzed",
+        "totalDays": "days Total",
+        "avgPerDay": "Avg / Day"
     },
     "leaderboard": {
         "title": "Courier Leaderboard",
@@ -82,7 +85,16 @@
         "successRate": "Success Rate",
         "noReason": "No Reason",
         "undelivered": "Undelivered",
-        "delivered": "Delivered"
+        "delivered": "Delivered",
+        "search": "Search...",
+        "selectDate": "Select date",
+        "courier": "Courier"
+    },
+    "status": {
+        "delivered": "Delivered",
+        "inTransit": "In Transit",
+        "exception": "Exception",
+        "pending": "Pending"
     },
     "footer": {
         "copyright": "All rights reserved",
