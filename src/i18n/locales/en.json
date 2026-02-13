@@ -1,0 +1,66 @@
+{
+    "header": {
+        "title": "Delivery",
+        "titleAccent": "Dashboard",
+        "selectRegions": "Select Regions",
+        "noLocations": "No Locations",
+        "uploadButton": "Upload CSV/Tab File"
+    },
+    "dateFilter": {
+        "allTime": "All Time",
+        "thisMonth": "This Month",
+        "lastMonth": "Last Month",
+        "thisWeek": "This Week",
+        "last7Days": "Last 7 Days",
+        "customRange": "Custom Range",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "applyRange": "Apply Range"
+    },
+    "kpi": {
+        "totalLoaded": "Total Parcels Loaded",
+        "delivered": "Successfully Delivered",
+        "successRate": "success rate",
+        "noReason": "Undelivered (No Reason)",
+        "attention": "Requires immediate attention",
+        "regionPerformance": "Region Performance",
+        "allRegions": "All Active Regions",
+        "noSelection": "No Selection",
+        "regionsSelected": "Regions Selected"
+    },
+    "charts": {
+        "successRateTrend": "Success Rate Trend",
+        "dailyPerformance": "Daily performance tracking",
+        "weeklyPerformance": "Weekly aggregated performance",
+        "monthlyPerformance": "Monthly aggregated performance",
+        "problemAreas": "Problem Areas",
+        "topCouriersNoReason": "Top couriers with 'No Reason' returns"
+    },
+    "leaderboard": {
+        "title": "Courier Leaderboard",
+        "subtitle": "Detailed performance metrics per courier",
+        "filterCouriers": "Filter Couriers",
+        "courierName": "Courier Name",
+        "location": "Location",
+        "density": "Density",
+        "densityHint": "(Parcels/Addr)",
+        "loaded": "Loaded",
+        "delivered": "Delivered",
+        "exceptions": "Exceptions",
+        "successRate": "Success Rate",
+        "performance": "Performance",
+        "noMatches": "No couriers match the selected filters."
+    },
+    "common": {
+        "selectAll": "Select All",
+        "noItemsFound": "No items found",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "selected": "Selected"
+    },
+    "footer": {
+        "copyright": "All rights reserved",
+        "version": "System Version"
+    }
+}

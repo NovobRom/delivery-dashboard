@@ -1,0 +1,66 @@
+{
+    "header": {
+        "title": "Панель",
+        "titleAccent": "Доставки",
+        "selectRegions": "Оберіть регіони",
+        "noLocations": "Немає локацій",
+        "uploadButton": "Завантажити CSV/Tab файл"
+    },
+    "dateFilter": {
+        "allTime": "Весь час",
+        "thisMonth": "Цей місяць",
+        "lastMonth": "Минулий місяць",
+        "thisWeek": "Цей тиждень",
+        "last7Days": "Останні 7 днів",
+        "customRange": "Власний діапазон",
+        "startDate": "Дата початку",
+        "endDate": "Дата завершення",
+        "applyRange": "Застосувати"
+    },
+    "kpi": {
+        "totalLoaded": "Завантажено посилок",
+        "delivered": "Успішно доставлено",
+        "successRate": "відсоток доставки",
+        "noReason": "Не доставлено (без причини)",
+        "attention": "Потребує негайної уваги",
+        "regionPerformance": "Продуктивність регіону",
+        "allRegions": "Всі активні регіони",
+        "noSelection": "Нічого не обрано",
+        "regionsSelected": "Регіонів обрано"
+    },
+    "charts": {
+        "successRateTrend": "Тренд успішності",
+        "dailyPerformance": "Денна продуктивність",
+        "weeklyPerformance": "Тижнева агрегована продуктивність",
+        "monthlyPerformance": "Місячна агрегована продуктивність",
+        "problemAreas": "Проблемні зони",
+        "topCouriersNoReason": "Топ кур'єрів з поверненнями 'без причини'"
+    },
+    "leaderboard": {
+        "title": "Рейтинг кур'єрів",
+        "subtitle": "Детальна статистика по кожному кур'єру",
+        "filterCouriers": "Фільтр кур'єрів",
+        "courierName": "Ім'я кур'єра",
+        "location": "Локація",
+        "density": "Щільність",
+        "densityHint": "(Посилок/Адреса)",
+        "loaded": "Завантажено",
+        "delivered": "Доставлено",
+        "exceptions": "Виключення",
+        "successRate": "Відсоток успіху",
+        "performance": "Продуктивність",
+        "noMatches": "Жоден кур'єр не відповідає обраним фільтрам."
+    },
+    "common": {
+        "selectAll": "Обрати всі",
+        "noItemsFound": "Немає елементів",
+        "daily": "Денні",
+        "weekly": "Тижневі",
+        "monthly": "Місячні",
+        "selected": "Обрано"
+    },
+    "footer": {
+        "copyright": "Всі права захищені",
+        "version": "Версія системи"
+    }
+}

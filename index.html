@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Delivery Dashboard - Roman Novobranets</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    
+    <!-- React & Libraries -->
+    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.15.3/umd/Recharts.js"></script>
+    
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone@7.26.10/babel.min.js"></script>
+
+    <style>
+        :root {
+            --primary-indigo: #4f46e5;
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --bg-card: rgba(255, 255, 255, 0.7);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(244, 63, 94, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: #1e293b;
+        }
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        .glass-header {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 20px;
+        }
+        /* Date Input Styling */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.6;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- IMPORTS ---
+        const { useState, useMemo, useEffect, useRef } = React;
+        
+        // Destructure Recharts
+        const RC = window.Recharts || {};
+        const { 
+            LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+            PieChart, Pie, Cell, AreaChart, Area
+        } = RC;
+        
+        // --- ICONS ---
+        const Icons = {
+            BarChart2: (props) => <svg width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>,
+            Upload: (props) => <svg width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>,
+            Package: (props) => <svg width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>,
+            CheckCircle: (props) => <svg width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>,
+            AlertTriangle: (props) => <svg width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Users: (props) => <svg width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>,
+            TrendingUp: (props) => <svg width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>,
+            AlertCircle: (props) => <svg width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>,
+            ArrowUpRight: (props) => <svg width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>,
+            ArrowDownRight: (props) => <svg width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="7" y1="7" x2="17" y2="17"></line><polyline points="17 7 17 17 7 17"></polyline></svg>,
+            MapPin: (props) => <svg width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>,
+            Globe: (props) => <svg width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>,
+            Activity: (props) => <svg width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>,
+            ChevronDown: (props) => <svg width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="6 9 12 15 18 9"></polyline></svg>,
+            Check: (props) => <svg width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="20 6 9 17 4 12"></polyline></svg>,
+            Filter: (props) => <svg width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>,
+            Calendar: (props) => <svg width={props.size||24} height={props.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>,
+        };
+
+        // --- CONFIG ---
+        const APP_VERSION = "v9.0"; 
+        const AUTHOR = "Roman Novobranets";
+        const CURRENT_YEAR = 2026;
+
+        // --- COMPONENTS ---
+        
+        const GlassCard = ({ children, className = "", noPadding = false }) => (
+            <div className={`glass-panel rounded-2xl transition-all duration-300 hover:shadow-lg ${noPadding ? '' : 'p-6'} ${className}`}>
+                {children}
+            </div>
+        );
+
+        const StatCard = ({ title, value, subtext, icon: Icon, colorClass, trend }) => {
+            return (
+                <GlassCard className="group relative overflow-hidden">
+                    <div className={`absolute -top-4 -right-4 p-4 opacity-[0.05] group-hover:opacity-10 transition-opacity scale-150 ${colorClass.replace('bg-', 'text-')}`}>
+                        <Icon size={120} />
+                    </div>
+                    <div className="relative z-10 flex flex-col h-full justify-between">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className={`p-3 rounded-xl ${colorClass} bg-opacity-10 shadow-sm`}>
+                                <Icon size={24} className={colorClass.replace('bg-', 'text-')} />
+                            </div>
+                             {trend && (
+                                <div className={`flex items-center text-xs font-bold px-2.5 py-1 rounded-full border ${trend > 0 ? 'text-emerald-700 bg-emerald-50 border-emerald-100' : 'text-rose-700 bg-rose-50 border-rose-100'}`}>
+                                    {trend > 0 ? <Icons.ArrowUpRight size={14} className="mr-1" /> : <Icons.ArrowDownRight size={14} className="mr-1" />}
+                                    {Math.abs(trend)}%
+                                </div>
+                            )}
+                        </div>
+                        <div>
+                            <h3 className="text-3xl font-bold text-slate-800 tracking-tight">{value}</h3>
+                            <p className="text-sm font-medium text-slate-500 mt-1">{title}</p>
+                            {subtext && <p className="text-xs text-slate-400 mt-2 font-medium bg-slate-100/50 inline-block px-2 py-0.5 rounded truncate max-w-full" title={subtext}>{subtext}</p>}
+                        </div>
+                    </div>
+                </GlassCard>
+            );
+        };
+
+        const FilterButton = ({ active, onClick, label }) => (
+            <button
+                onClick={onClick}
+                className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all duration-200 border ${
+                active 
+                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-200' 
+                    : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:border-slate-300'
+                }`}
+            >
+                {label}
+            </button>
+        );
+
+        // Reusable MultiSelect Component
+        const MultiSelect = ({ options, selected, onChange, label = "Select", icon: Icon }) => {
+            const [isOpen, setIsOpen] = useState(false);
+            const containerRef = useRef(null);
+
+            // Close on click outside
+            useEffect(() => {
+                const handleClickOutside = (event) => {
+                    if (containerRef.current && !containerRef.current.contains(event.target)) {
+                        setIsOpen(false);
+                    }
+                };
+                document.addEventListener("mousedown", handleClickOutside);
+                return () => document.removeEventListener("mousedown", handleClickOutside);
+            }, []);
+
+            const toggleOption = (option) => {
+                const newSelected = selected.includes(option)
+                    ? selected.filter(item => item !== option)
+                    : [...selected, option];
+                onChange(newSelected);
+            };
+
+            const isAllSelected = options.length > 0 && selected.length === options.length;
+
+            const toggleAll = () => {
+                if (isAllSelected) {
+                    onChange([]); // Deselect all (Empty = All)
+                } else {
+                    onChange(options); // Select all explicitly
+                }
+            };
+
+            // Calculate label to show on button
+            const getButtonLabel = () => {
+                if (selected.length === 0) return label; // "Filter Couriers"
+                if (selected.length === options.length) return `All (${options.length})`;
+                if (selected.length === 1) return selected[0].length > 15 ? selected[0].substring(0, 12) + '...' : selected[0]; 
+                return `${selected.length} Selected`;
+            };
+
+            return (
+                <div className="relative" ref={containerRef}>
+                    <button 
+                        onClick={() => setIsOpen(!isOpen)}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
+                            isOpen || selected.length > 0
+                                ? 'bg-indigo-50 border-indigo-200 text-indigo-700 shadow-sm'
+                                : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-500'
+                        }`}
+                    >
+                        {Icon && <Icon size={14} className={selected.length > 0 ? "text-indigo-600" : "text-slate-400"} />}
+                        <span>{getButtonLabel()}</span>
+                        {!Icon && <Icons.ChevronDown size={12} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />}
+                    </button>
+
+                    {isOpen && (
+                        <div className="absolute top-full mt-2 right-0 w-64 bg-white/90 backdrop-blur-xl rounded-xl shadow-xl border border-white/40 ring-1 ring-black/5 p-2 z-50 animate-in fade-in zoom-in-95 duration-100">
+                            {/* Select All Option */}
+                            <div 
+                                onClick={toggleAll}
+                                className="flex items-center gap-2 px-3 py-2 hover:bg-indigo-50 rounded-lg cursor-pointer transition-colors border-b border-slate-100 mb-1 pb-2"
+                            >
+                                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${isAllSelected || selected.length === 0 ? 'bg-indigo-600 border-indigo-600' : 'bg-white border-slate-300'}`}>
+                                    {(isAllSelected || selected.length === 0) && <Icons.Check size={10} className="text-white" />}
+                                </div>
+                                <span className="text-xs font-bold text-slate-700">Select All</span>
+                            </div>
+                            
+                            {/* Options List */}
+                            <div className="max-h-60 overflow-y-auto custom-scrollbar space-y-0.5">
+                                {options.length > 0 ? (
+                                    options.map(option => {
+                                        const isSelected = selected.includes(option);
+                                        return (
+                                            <div 
+                                                key={option} 
+                                                onClick={() => toggleOption(option)}
+                                                className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${isSelected ? 'bg-indigo-50/50' : 'hover:bg-slate-50'}`}
+                                            >
+                                                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${isSelected ? 'bg-indigo-600 border-indigo-600' : 'bg-white border-slate-300'}`}>
+                                                    {isSelected && <Icons.Check size={10} className="text-white" />}
+                                                </div>
+                                                <span className={`text-xs truncate ${isSelected ? 'text-indigo-900 font-medium' : 'text-slate-600'}`}>
+                                                    {option}
+                                                </span>
+                                            </div>
+                                        )
+                                    })
+                                ) : (
+                                    <div className="px-3 py-4 text-center text-xs text-slate-400 italic">
+                                        No items found
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+        
+        // Extended Date Filter Component with Custom Range
+        const DateFilter = ({ value, onChange, customRange, onCustomChange }) => {
+            const [isOpen, setIsOpen] = useState(false);
+            const containerRef = useRef(null);
+            
+            // Temporary state for inputs inside the dropdown
+            const [tempStart, setTempStart] = useState(customRange.start);
+            const [tempEnd, setTempEnd] = useState(customRange.end);
+
+            const options = [
+                { id: 'all', label: 'All Time' },
+                { id: 'this_month', label: 'This Month' },
+                { id: 'last_month', label: 'Last Month' },
+                { id: 'this_week', label: 'This Week' },
+                { id: 'last_7', label: 'Last 7 Days' },
+                { id: 'custom', label: 'Custom Range' },
+            ];
+
+            useEffect(() => {
+                const handleClickOutside = (event) => {
+                    if (containerRef.current && !containerRef.current.contains(event.target)) {
+                        setIsOpen(false);
+                    }
+                };
+                document.addEventListener("mousedown", handleClickOutside);
+                return () => document.removeEventListener("mousedown", handleClickOutside);
+            }, []);
+            
+            // Sync temp state when opening
+            useEffect(() => {
+                if(isOpen) {
+                    setTempStart(customRange.start);
+                    setTempEnd(customRange.end);
+                }
+            }, [isOpen, customRange]);
+
+            const handleApplyCustom = () => {
+                onCustomChange({ start: tempStart, end: tempEnd });
+                onChange('custom');
+                setIsOpen(false);
+            };
+
+            const currentLabel = value === 'custom' && customRange.start && customRange.end
+                ? `${customRange.start.slice(5)} - ${customRange.end.slice(5)}`
+                : options.find(o => o.id === value)?.label || 'All Time';
+
+            return (
+                <div className="relative" ref={containerRef}>
+                    <button 
+                        onClick={() => setIsOpen(!isOpen)}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
+                            isOpen || value !== 'all'
+                                ? 'bg-indigo-50 border-indigo-200 text-indigo-700 shadow-sm'
+                                : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-500'
+                        }`}
+                    >
+                        <Icons.Calendar size={14} className={value !== 'all' ? "text-indigo-600" : "text-slate-400"} />
+                        <span className="truncate max-w-[120px]">{currentLabel}</span>
+                        <Icons.ChevronDown size={12} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {isOpen && (
+                        <div className="absolute top-full mt-2 right-0 w-56 bg-white/90 backdrop-blur-xl rounded-xl shadow-xl border border-white/40 ring-1 ring-black/5 p-2 z-50 animate-in fade-in zoom-in-95 duration-100 flex flex-col">
+                            <div className="mb-2 border-b border-slate-100 pb-1">
+                                {options.filter(o => o.id !== 'custom').map(option => (
+                                    <div 
+                                        key={option.id} 
+                                        onClick={() => { onChange(option.id); setIsOpen(false); }}
+                                        className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${value === option.id ? 'bg-indigo-50 text-indigo-700 font-medium' : 'hover:bg-slate-50 text-slate-600'}`}
+                                    >
+                                        <span className="text-xs">{option.label}</span>
+                                        {value === option.id && <Icons.Check size={12} className="ml-auto text-indigo-600" />}
+                                    </div>
+                                ))}
+                            </div>
+                            
+                            {/* Custom Range Inputs */}
+                            <div className="px-3 pb-2 pt-1">
+                                <span className="text-[10px] uppercase font-bold text-slate-400 mb-2 block">Custom Range</span>
+                                <div className="space-y-2">
+                                    <div className="flex flex-col gap-1">
+                                        <label className="text-[10px] text-slate-500 font-medium">Start Date</label>
+                                        <input 
+                                            type="date" 
+                                            value={tempStart} 
+                                            onChange={(e) => setTempStart(e.target.value)}
+                                            className="w-full text-xs border border-slate-200 rounded px-2 py-1 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 text-slate-600 bg-slate-50/50"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                        <label className="text-[10px] text-slate-500 font-medium">End Date</label>
+                                        <input 
+                                            type="date" 
+                                            value={tempEnd} 
+                                            onChange={(e) => setTempEnd(e.target.value)}
+                                            className="w-full text-xs border border-slate-200 rounded px-2 py-1 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 text-slate-600 bg-slate-50/50"
+                                        />
+                                    </div>
+                                    <button 
+                                        onClick={handleApplyCustom}
+                                        disabled={!tempStart || !tempEnd}
+                                        className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-1.5 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    >
+                                        Apply Range
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // --- UTILS ---
+        
+        const getWeekNumber = (d) => {
+            d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            const weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+            return { year: d.getUTCFullYear(), week: weekNo };
+        };
+
+        const parseDateString = (dateStr) => {
+            if (!dateStr) return new Date();
+            const parts = dateStr.split(/[.-]/).map(Number);
+            if (parts.length === 3) {
+                const [day, month, year] = parts;
+                return new Date(year, month - 1, day);
+            }
+            return new Date();
+        };
+
+        const parseCSV = (csvText) => {
+            if (!csvText) return [];
+            
+            const lines = csvText.split('\n').filter(line => line.trim() !== '');
+            if (lines.length === 0) return [];
+            
+            const firstLine = lines[0];
+            let delimiter = ',';
+            if (firstLine.includes('\t')) delimiter = '\t';
+            else if (firstLine.includes(';')) delimiter = ';';
+            
+            const headers = firstLine.split(delimiter).map(h => h.trim().replace(/^"|"$/g, ''));
+            
+            const idx = {
+                date: headers.findIndex(h => h.includes('Дата відомості')),
+                courier: headers.findIndex(h => h.includes("ПІБ кур'єра")),
+                unit: headers.findIndex(h => h.includes('Підрозділ відомості')), 
+                addresses: headers.findIndex(h => h.includes('К-сть адрес')),
+                loaded: headers.findIndex(h => h.includes('К-сть завантажених ШК')),
+                delivered: headers.findIndex(h => h.includes('К-сть доставлених ШК на дату відомості')), 
+                hand: headers.findIndex(h => h.includes('"В руки"')),
+                safeplace: headers.findIndex(h => h.includes('"SafePlace"')),
+                undelivered: headers.findIndex(h => h.includes('К-сть недоставлених ШК на дату відомості')),
+                noReason: headers.findIndex(h => h.includes('К-сть недоставлених ШК без причини')),
+                percent: headers.findIndex(h => h.includes('Відсоток доставлених ШК')),
+            };
+
+            const data = lines.slice(1).map((line, index) => {
+                let row;
+                if (delimiter === '\t') {
+                    row = line.split('\t');
+                } else if (delimiter === ';') {
+                    row = line.split(';');
+                } else {
+                    row = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(',');
+                }
+                
+                const clean = (val) => val ? val.replace(/^"|"$/g, '').trim() : '';
+                const num = (val) => {
+                    let v = clean(val);
+                    if (!v) return 0;
+                    
+                    const isPercent = v.includes('%');
+                    v = v.replace('%', '').replace(/\s/g, '');
+                    if (v.includes(',') && !v.includes('.')) v = v.replace(',', '.');
+                    
+                    let parsed = parseFloat(v);
+                    if (isNaN(parsed)) return 0;
+                    return parsed;
+                };
+
+                if (!row[idx.date]) return null;
+
+                let successRate = num(row[idx.percent]);
+                const rawPercent = clean(row[idx.percent]);
+                
+                if (!rawPercent.includes('%') && successRate <= 1 && successRate > 0) {
+                    successRate = successRate * 100;
+                }
+
+                return {
+                    id: index,
+                    dateStr: clean(row[idx.date]), 
+                    dateObj: parseDateString(clean(row[idx.date])),
+                    courier: clean(row[idx.courier]),
+                    unit: idx.unit > -1 ? clean(row[idx.unit]) : 'Unknown',
+                    addresses: num(row[idx.addresses]),
+                    loaded: num(row[idx.loaded]),
+                    delivered: num(row[idx.delivered]),
+                    hand: num(row[idx.hand]),
+                    safeplace: num(row[idx.safeplace]),
+                    undelivered: num(row[idx.undelivered]),
+                    noReason: num(row[idx.noReason]),
+                    successRate: successRate
+                };
+            }).filter(item => item !== null && item.dateStr); 
+
+            return data.sort((a, b) => a.dateObj - b.dateObj);
+        };
+
+        const INITIAL_CSV = `№\tДата відомості\tПІБ кур'єра\tНомер авто\tПідрозділ відомості\tК-сть відомостей\tК-сть адрес\tК-сть завантажених ШК\tК-сть доставлених ШК на дату відомості\t"К-сть доставлених ШК на дату відомості ""В руки"""\t"К-сть доставлених ШК на дату відомості ""SafePlace"""\tК-сть недоставлених ШК на дату відомості\tК-сть недоставлених ШК з причиною\tК-сть недоставлених ШК без причини\tВідсоток доставлених ШК
+1\t02.01.2026\tdinul.a\tNO9230Y\tRIGA 1\t1\t19\t20\t15\t15\t0\t5\t5\t0\t75.00%
+2\t02.01.2026\tkravets.v\t210MJR\tTallinn DEPO\t1\t0\t0\t0\t0\t0\t0\t0\t0\t
+3\t02.01.2026\tmaistrienko.m\tNO7938\tRIGA 1\t2\t20\t23\t18\t18\t0\t5\t0\t5\t78.26%
+4\t02.01.2026\trozkov.a\tNFU582\tAdressDelivery-OWN-LT-Vilnius-01\t1\t20\t21\t15\t14\t1\t6\t3\t3\t71.43%
+5\t06.02.2026\tshvets.a\t210MJR\tTALLINN 1\t3\t32\t32\t19\t19\t0\t13\t0\t13\t59.38%
+6\t07.02.2026\tshvets.a\t210MJR\tTALLINN 1\t3\t42\t43\t34\t34\t0\t9\t1\t8\t79.07%
+7\t09.02.2026\tchudzij.a\tMRR974\tAdressDelivery-OWN-LT-Vilnius-01\t1\t26\t28\t19\t19\t0\t9\t2\t7\t67.86%`;
+
+        function App() {
+            const [rawData, setRawData] = useState(INITIAL_CSV);
+            
+            // Aggregation Mode: 'day', 'week', 'month'
+            const [aggMode, setAggMode] = useState('day');
+            
+            // --- FILTERS ---
+            const [selectedUnits, setSelectedUnits] = useState([]); 
+            const [selectedCouriers, setSelectedCouriers] = useState([]); 
+            const [dateRange, setDateRange] = useState('all');
+            const [customDateRange, setCustomDateRange] = useState({ start: '', end: '' }); // NEW: Custom Range State
+            
+            // Re-parse
+            const fullData = useMemo(() => parseCSV(rawData), [rawData]);
+
+            // Get unique units
+            const uniqueUnits = useMemo(() => {
+                const units = [...new Set(fullData.map(d => d.unit))];
+                return units.filter(u => u && u !== 'Unknown').sort();
+            }, [fullData]);
+
+            // Initialize selection (Select All Units by default)
+            useEffect(() => {
+                if (uniqueUnits.length > 0 && selectedUnits.length === 0) {
+                    setSelectedUnits(uniqueUnits);
+                }
+            }, [uniqueUnits]);
+
+            // --- DATA FLOW FIX ---
+            
+            // 1. Base Data: Filtered by Region AND Date
+            const dataByRegionAndDate = useMemo(() => {
+                if (selectedUnits.length === 0) return []; 
+                
+                // First filter by Region
+                let filtered = fullData.filter(d => selectedUnits.includes(d.unit));
+                
+                // Then filter by Date
+                if (dateRange !== 'all') {
+                    if (dateRange === 'custom') {
+                        // Custom Range Logic
+                        if (customDateRange.start && customDateRange.end) {
+                            const startDate = new Date(customDateRange.start);
+                            startDate.setHours(0,0,0,0);
+                            
+                            const endDate = new Date(customDateRange.end);
+                            endDate.setHours(23,59,59,999);
+                            
+                            filtered = filtered.filter(d => d.dateObj >= startDate && d.dateObj <= endDate);
+                        }
+                    } else {
+                        // Standard Presets
+                        const today = new Date();
+                        const currentMonth = today.getMonth();
+                        const currentYear = today.getFullYear();
+                        
+                        filtered = filtered.filter(d => {
+                            const dDate = d.dateObj;
+                            if (dateRange === 'this_month') {
+                                return dDate.getMonth() === currentMonth && dDate.getFullYear() === currentYear;
+                            }
+                            if (dateRange === 'last_month') {
+                                const lastMonthDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                                return dDate.getMonth() === lastMonthDate.getMonth() && dDate.getFullYear() === lastMonthDate.getFullYear();
+                            }
+                            if (dateRange === 'this_week') {
+                                const { year: dy, week: dw } = getWeekNumber(dDate);
+                                const { year: cy, week: cw } = getWeekNumber(today);
+                                return dy === cy && dw === cw;
+                            }
+                            if (dateRange === 'last_7') {
+                                const sevenDaysAgo = new Date();
+                                sevenDaysAgo.setDate(today.getDate() - 7);
+                                return dDate >= sevenDaysAgo;
+                            }
+                            return true;
+                        });
+                    }
+                }
+                
+                return filtered;
+            }, [fullData, selectedUnits, dateRange, customDateRange]);
+
+            // 2. Available Couriers: Derived strictly from dataByRegionAndDate.
+            const availableCouriers = useMemo(() => {
+                const couriers = [...new Set(dataByRegionAndDate.map(d => d.courier))];
+                return couriers.filter(c => c).sort();
+            }, [dataByRegionAndDate]);
+
+            // 3. Final Data: Filtered by Courier
+            const finalData = useMemo(() => {
+                if (selectedCouriers.length === 0) return dataByRegionAndDate;
+                return dataByRegionAndDate.filter(d => selectedCouriers.includes(d.courier));
+            }, [dataByRegionAndDate, selectedCouriers]);
+
+            // Reset courier selection
+            useEffect(() => {
+                setSelectedCouriers(prev => prev.filter(c => availableCouriers.includes(c)));
+            }, [availableCouriers]);
+
+            // --- CHART AGGREGATION LOGIC (Day vs Week vs Month) ---
+            const chartData = useMemo(() => {
+                const groups = {};
+                
+                finalData.forEach(item => {
+                    if (item.loaded === 0) return;
+                    
+                    let key, sortKey, label;
+                    
+                    if (aggMode === 'week') {
+                        const { year, week } = getWeekNumber(item.dateObj);
+                        key = `${year}-W${String(week).padStart(2, '0')}`;
+                        sortKey = key; 
+                        label = `W${week} (${year})`; 
+                    } else if (aggMode === 'month') {
+                        key = `${item.dateObj.getFullYear()}-${String(item.dateObj.getMonth()).padStart(2, '0')}`;
+                        sortKey = key;
+                        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                        label = `${monthNames[item.dateObj.getMonth()]} ${item.dateObj.getFullYear()}`;
+                    } else {
+                        key = item.dateStr; 
+                        sortKey = item.dateObj.getTime();
+                        label = item.dateStr.slice(0, 5); 
+                    }
+
+                    if (!groups[key]) {
+                        groups[key] = { 
+                            key, 
+                            sortKey,
+                            label,
+                            totalLoaded: 0, 
+                            totalDelivered: 0,
+                            count: 0 
+                        };
+                    }
+                    groups[key].totalLoaded += item.loaded;
+                    groups[key].totalDelivered += item.delivered;
+                    groups[key].count += 1;
+                });
+
+                let result = Object.values(groups)
+                    .map(group => ({
+                        date: group.label, // X Axis Label
+                        sortKey: group.sortKey,
+                        avgRate: group.totalLoaded > 0 
+                            ? parseFloat(((group.totalDelivered / group.totalLoaded) * 100).toFixed(1)) 
+                            : 0
+                    }))
+                    .sort((a, b) => {
+                         if (typeof a.sortKey === 'number') return a.sortKey - b.sortKey;
+                         return a.sortKey.localeCompare(b.sortKey);
+                    });
+
+                return result;
+            }, [finalData, aggMode]);
+
+            // Stats for Cards (Aggregate of Final Data)
+            const totalStats = useMemo(() => {
+                const loaded = finalData.reduce((acc, curr) => acc + curr.loaded, 0);
+                const delivered = finalData.reduce((acc, curr) => acc + curr.delivered, 0);
+                const noReason = finalData.reduce((acc, curr) => acc + curr.noReason, 0);
+                const avgRate = loaded > 0 ? ((delivered / loaded) * 100).toFixed(1) : 0;
+                return { loaded, delivered, avgRate, noReason };
+            }, [finalData]);
+
+            // Courier Leaderboard Stats
+            const courierStats = useMemo(() => {
+                const groups = {};
+                finalData.forEach(item => {
+                    if (!item.courier || (item.loaded === 0 && item.delivered === 0)) return;
+                    if (!groups[item.courier]) {
+                        groups[item.courier] = { 
+                            name: item.courier, 
+                            delivered: 0, 
+                            loaded: 0, 
+                            addresses: 0,
+                            noReason: 0
+                        };
+                    }
+                    groups[item.courier].delivered += item.delivered;
+                    groups[item.courier].loaded += item.loaded;
+                    groups[item.courier].addresses += item.addresses;
+                    groups[item.courier].noReason += item.noReason;
+                });
+
+                return Object.values(groups)
+                    .map(c => ({ 
+                        ...c, 
+                        rate: c.loaded > 0 ? ((c.delivered / c.loaded) * 100).toFixed(1) : 0,
+                        density: c.addresses > 0 ? (c.delivered / c.addresses).toFixed(2) : 0,
+                    }))
+                    .sort((a, b) => b.delivered - a.delivered);
+            }, [finalData]);
+
+            const noReasonData = useMemo(() => {
+                return [...courierStats]
+                    .sort((a, b) => b.noReason - a.noReason)
+                    .slice(0, 5); 
+            }, [courierStats]);
+
+            const handleFileUpload = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => setRawData(e.target.result);
+                    reader.readAsText(file);
+                }
+            };
+
+            const CustomTooltip = ({ active, payload, label, unit = "" }) => {
+                if (active && payload && payload.length) {
+                    return (
+                        <div className="bg-white/90 backdrop-blur-md p-3 border border-slate-200 rounded-lg shadow-xl text-sm">
+                            <p className="font-semibold text-slate-700 mb-1">{label}</p>
+                            <p className="text-indigo-600 font-bold">
+                                {payload[0].value}{unit}
+                                <span className="font-normal text-slate-500 ml-1">{payload[0].name === 'avgRate' ? 'Success Rate' : payload[0].name}</span>
+                            </p>
+                        </div>
+                    );
+                }
+                return null;
+            };
+
+            const getRegionLabel = () => {
+                if (selectedUnits.length === uniqueUnits.length) return "All Active Regions";
+                if (selectedUnits.length === 0) return "No Selection";
+                if (selectedUnits.length === 1) return selectedUnits[0];
+                return `${selectedUnits.length} Regions Selected`;
+            }
+
+            // --- RENDER ---
+            
+            return (
+                <>
+                {/* Header */}
+                <header className="glass-header sticky top-0 z-50">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
+                                <Icons.Globe size={22} />
+                            </div>
+                            <div className="flex flex-col">
+                                <h1 className="text-xl font-bold text-slate-800 tracking-tight leading-tight">Delivery<span className="text-indigo-600">Dashboard</span></h1>
+                                
+                                <div className="flex items-center gap-2 mt-1">
+                                    {uniqueUnits.length > 0 ? (
+                                        <MultiSelect 
+                                            options={uniqueUnits} 
+                                            selected={selectedUnits} 
+                                            onChange={setSelectedUnits} 
+                                            label="Select Regions"
+                                            icon={Icons.MapPin}
+                                        />
+                                    ) : (
+                                        <div className="text-xs text-slate-400 flex items-center gap-1">
+                                            <Icons.MapPin size={12} />
+                                            <span>No Locations</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-4">
+                            {/* Date Filter with Custom Range */}
+                            <DateFilter 
+                                value={dateRange} 
+                                onChange={setDateRange} 
+                                customRange={customDateRange}
+                                onCustomChange={setCustomDateRange}
+                            />
+                            
+                            <label className="group relative flex items-center gap-2 bg-slate-900 hover:bg-indigo-600 text-white px-5 py-2.5 rounded-xl cursor-pointer transition-all duration-300 shadow-md hover:shadow-indigo-500/30 overflow-hidden">
+                                <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                                <Icons.Upload size={18} className="relative z-10" />
+                                <span className="text-sm font-medium relative z-10">Upload CSV/Tab File</span>
+                                <input type="file" accept=".csv,.txt" onChange={handleFileUpload} className="hidden" />
+                            </label>
+                        </div>
+                    </div>
+                </header>
+
+                <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+                    {/* KPI Stats */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <StatCard 
+                            title="Total Parcels Loaded" 
+                            value={totalStats.loaded.toLocaleString()} 
+                            icon={Icons.Package} 
+                            colorClass="bg-indigo-600 text-indigo-600"
+                            trend={5.2}
+                        />
+                        <StatCard 
+                            title="Successfully Delivered" 
+                            value={totalStats.delivered.toLocaleString()} 
+                            subtext={`${totalStats.avgRate}% success rate`}
+                            icon={Icons.CheckCircle} 
+                            colorClass="bg-emerald-500 text-emerald-500"
+                            trend={2.4}
+                        />
+                        <StatCard 
+                            title="Undelivered (No Reason)" 
+                            value={totalStats.noReason} 
+                            subtext="Requires immediate attention"
+                            icon={Icons.AlertTriangle} 
+                            colorClass="bg-rose-500 text-rose-500"
+                            trend={-12}
+                        />
+                        
+                        <StatCard 
+                            title="Region Performance" 
+                            value={`${totalStats.avgRate}%`} 
+                            icon={Icons.Activity} 
+                            colorClass="bg-violet-500 text-violet-500"
+                            subtext={getRegionLabel()}
+                        />
+                    </div>
+
+                    {/* Charts Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Area Chart */}
+                        <GlassCard className="lg:col-span-2 flex flex-col">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+                                <div>
+                                    <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                        <div className="p-1.5 bg-indigo-50 rounded-lg text-indigo-600">
+                                            <Icons.TrendingUp size={18} />
+                                        </div>
+                                        Success Rate Trend
+                                    </h2>
+                                    <p className="text-sm text-slate-500 mt-1 ml-10">
+                                        {aggMode === 'week' ? 'Weekly aggregated performance' : aggMode === 'month' ? 'Monthly aggregated performance' : 'Daily performance tracking'}
+                                    </p>
+                                </div>
+                                <div className="flex bg-slate-100/80 p-1 rounded-full border border-slate-200">
+                                    <FilterButton active={aggMode === 'day'} onClick={() => setAggMode('day')} label="Daily" />
+                                    <FilterButton active={aggMode === 'week'} onClick={() => setAggMode('week')} label="Weekly" />
+                                    <FilterButton active={aggMode === 'month'} onClick={() => setAggMode('month')} label="Monthly" />
+                                </div>
+                            </div>
+                            <div className="h-[320px] w-full mt-auto">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                        <defs>
+                                            <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.2}/>
+                                                <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                        <XAxis 
+                                            dataKey="date" 
+                                            stroke="#94a3b8" 
+                                            tick={{fontSize: 12}} 
+                                            tickLine={false}
+                                            axisLine={false}
+                                            dy={10}
+                                        />
+                                        <YAxis 
+                                            domain={[0, 100]} 
+                                            stroke="#94a3b8" 
+                                            tick={{fontSize: 12}} 
+                                            tickLine={false}
+                                            axisLine={false}
+                                            unit="%" 
+                                            dx={-10}
+                                        />
+                                        <Tooltip content={<CustomTooltip unit="%" />} cursor={{ stroke: '#6366f1', strokeWidth: 1, strokeDasharray: '4 4' }} />
+                                        <Area 
+                                            type="monotone" 
+                                            dataKey="avgRate" 
+                                            stroke="#4f46e5" 
+                                            strokeWidth={3}
+                                            fillOpacity={1} 
+                                            fill="url(#colorRate)" 
+                                            animationDuration={1500}
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </GlassCard>
+
+                        {/* Bar Chart (No Reason) */}
+                        <GlassCard className="flex flex-col">
+                            <div className="mb-6">
+                                <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                    <div className="p-1.5 bg-rose-50 rounded-lg text-rose-500">
+                                        <Icons.AlertCircle size={18} />
+                                    </div>
+                                    Problem Areas
+                                </h2>
+                                <p className="text-sm text-slate-500 mt-1 ml-10">Top couriers with 'No Reason' returns</p>
+                            </div>
+                            <div className="h-[320px] w-full flex-grow">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={noReasonData} layout="vertical" margin={{ left: 0, right: 20 }}>
+                                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9"/>
+                                        <XAxis type="number" hide />
+                                        <YAxis 
+                                            dataKey="name" 
+                                            type="category" 
+                                            width={90} 
+                                            tick={{fontSize: 12, fill: '#64748b', fontWeight: 500}} 
+                                            axisLine={false}
+                                            tickLine={false}
+                                        />
+                                        <Tooltip 
+                                            cursor={{fill: '#f1f5f9'}} 
+                                            contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'}}
+                                        />
+                                        <Bar dataKey="noReason" fill="#f43f5e" radius={[0, 6, 6, 0]} barSize={24}>
+                                            {
+                                                noReasonData.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={index === 0 ? '#f43f5e' : '#fda4af'} />
+                                                ))
+                                            }
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </GlassCard>
+                    </div>
+
+                    {/* Leaderboard Table with Courier Filter */}
+                    <GlassCard noPadding className="overflow-hidden">
+                        <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+                            <div>
+                                <h2 className="text-lg font-bold text-slate-800">Courier Leaderboard</h2>
+                                <p className="text-sm text-slate-500 mt-1">Detailed performance metrics per courier</p>
+                            </div>
+                            
+                            {/* Courier Filter Toolbar */}
+                            <div className="flex items-center gap-2">
+                                <MultiSelect 
+                                    options={availableCouriers}
+                                    selected={selectedCouriers}
+                                    onChange={setSelectedCouriers}
+                                    label="Filter Couriers"
+                                    icon={Icons.Filter}
+                                />
+                            </div>
+                        </div>
+                        <div className="overflow-x-auto custom-scrollbar">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-slate-50/50 text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                                        <th className="py-4 px-6 border-b border-slate-100 first:pl-8">Courier Name</th>
+                                        <th className="py-4 px-6 border-b border-slate-100 text-right">Location</th>
+                                        <th className="py-4 px-6 border-b border-slate-100 text-right">Density <span className="normal-case font-normal text-slate-400 block text-[10px]">(Parcels/Addr)</span></th>
+                                        <th className="py-4 px-6 border-b border-slate-100 text-right">Loaded</th>
+                                        <th className="py-4 px-6 border-b border-slate-100 text-right">Delivered</th>
+                                        <th className="py-4 px-6 border-b border-slate-100 text-right text-rose-500">Exceptions</th>
+                                        <th className="py-4 px-6 border-b border-slate-100 text-right">Success Rate</th>
+                                        <th className="py-4 px-6 border-b border-slate-100 text-center w-32 last:pr-8">Performance</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="text-sm">
+                                    {courierStats.length > 0 ? courierStats.map((courier, idx) => (
+                                    <tr key={idx} className="group hover:bg-indigo-50/30 transition-colors border-b border-slate-50 last:border-0">
+                                        <td className="py-4 px-6 first:pl-8">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold text-xs uppercase">
+                                                    {courier.name.slice(0, 2)}
+                                                </div>
+                                                <span className="font-semibold text-slate-700">{courier.name}</span>
+                                            </div>
+                                        </td>
+                                        <td className="py-4 px-6 text-right text-xs text-slate-500">
+                                            {finalData.find(d => d.courier === courier.name)?.unit.split('-')[0] || 'Unknown'}
+                                        </td>
+                                        <td className="py-4 px-6 text-right">
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                                                Number(courier.density) > 1.5 
+                                                ? 'bg-emerald-100 text-emerald-700' 
+                                                : 'bg-slate-100 text-slate-600'
+                                            }`}>
+                                                {courier.density}
+                                            </span>
+                                        </td>
+                                        <td className="py-4 px-6 text-right font-medium text-slate-600">{courier.loaded}</td>
+                                        <td className="py-4 px-6 text-right font-bold text-slate-800">{courier.delivered}</td>
+                                        <td className="py-4 px-6 text-right">
+                                            {courier.noReason > 0 ? (
+                                                <span className="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded text-xs border border-rose-100">
+                                                    {courier.noReason}
+                                                </span>
+                                            ) : (
+                                                <span className="text-slate-300">-</span>
+                                            )}
+                                        </td>
+                                        <td className="py-4 px-6 text-right font-semibold">
+                                            <span className={`${
+                                                Number(courier.rate) >= 95 ? 'text-emerald-600' : 
+                                                Number(courier.rate) >= 85 ? 'text-amber-600' : 'text-rose-600'
+                                            }`}>
+                                                {courier.rate}%
+                                            </span>
+                                        </td>
+                                        <td className="py-4 px-6 last:pr-8">
+                                            <div className="w-full bg-slate-100 rounded-full h-2 shadow-inner">
+                                                <div 
+                                                className={`h-2 rounded-full transition-all duration-500 ease-out shadow-sm ${
+                                                    Number(courier.rate) >= 95 ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 
+                                                    Number(courier.rate) >= 85 ? 'bg-gradient-to-r from-amber-400 to-orange-400' : 'bg-gradient-to-r from-rose-500 to-pink-500'
+                                                }`} 
+                                                style={{ width: `${courier.rate}%` }}
+                                                ></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    )) : (
+                                        <tr>
+                                            <td colSpan="8" className="py-8 text-center text-slate-400 italic">
+                                                No couriers match the selected filters.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </GlassCard>
+                </main>
+
+                <footer className="mt-auto py-8">
+                    <div className="max-w-7xl mx-auto px-4 text-center">
+                        <p className="text-slate-400 text-xs flex items-center justify-center gap-2">
+                             <span>&copy; {CURRENT_YEAR} {AUTHOR}. All rights reserved.</span>
+                             <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
+                             <span>System Version {APP_VERSION}</span>
+                        </p>
+                    </div>
+                </footer>
+                </>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
