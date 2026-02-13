@@ -1,4 +1,4 @@
-import { parseCSV } from '../utils/csv-parser';
+import { parseCSV, parseMappedCSV } from '../utils/csv-parser';
 
 self.onmessage = (e: MessageEvent) => {
     const { type, payload } = e.data;
@@ -8,6 +8,11 @@ self.onmessage = (e: MessageEvent) => {
             case 'PARSE_CSV':
                 const result = parseCSV(payload);
                 self.postMessage({ type: 'PARSE_COMPLETE', payload: result });
+                break;
+            case 'PARSE_MAPPED_CSV':
+                const { file, mapping } = payload;
+                const mappedResult = parseMappedCSV(file, mapping);
+                self.postMessage({ type: 'PARSE_MAPPED_COMPLETE', payload: mappedResult });
                 break;
             // Future: Add filtering/aggregation here
             default:

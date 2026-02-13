@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import Papa from 'papaparse';
 import { useTranslation } from 'react-i18next';
 import { useSettingsStore, useFiltersStore, useDataStore } from '@/store';
 import { Icons } from '@/components/common/Icons';
@@ -20,7 +21,7 @@ export const Header: React.FC = () => {
     } = useFiltersStore();
 
     // Data for selectors
-    const { fullData, setRawData } = useDataStore();
+    const { fullData, openWizard } = useDataStore();
 
     // Get unique units
     const uniqueUnits = React.useMemo(() => {
@@ -35,7 +36,17 @@ export const Header: React.FC = () => {
             reader.onload = (e) => {
                 const text = e.target?.result;
                 if (typeof text === 'string') {
-                    setRawData(text);
+                    // Parse headers to preview
+                    Papa.parse(text, {
+                        preview: 1,
+                        skipEmptyLines: true,
+                        complete: (results) => {
+                            if (results.data && results.data.length > 0) {
+                                const headers = results.data[0] as string[];
+                                openWizard(text, headers);
+                            }
+                        }
+                    });
                 }
             };
             reader.readAsText(file);

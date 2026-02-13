@@ -1,5 +1,7 @@
 import { z } from 'zod';
-import type { CourierData, ParseResult } from '@/types/index';
+import Papa from 'papaparse';
+import type { CourierData, ParseResult, DeliveryRecord } from '@/types/index';
+import { DeliveryRecordSchema } from '@/types/schema';
 
 export class ParseError extends Error {
     constructor(message: string) {
@@ -164,5 +166,55 @@ export const parseCSV = (csvText: string): ParseResult => {
             data: [],
             error: error instanceof Error ? error.message : 'Unknown parsing error'
         };
+    }
+};
+
+
+export interface MappedParseResult {
+    data: DeliveryRecord[];
+    errors: Array<{ row: number; message: string; data: any }>;
+}
+
+export const parseMappedCSV = (csvText: string, mapping: Record<string, string>): MappedParseResult => {
+    try {
+        const result = Papa.parse(csvText, {
+            header: true,
+            skipEmptyLines: true,
+        });
+
+        const data: DeliveryRecord[] = [];
+        const errors: Array<{ row: number; message: string; data: any }> = [];
+
+        result.data.forEach((row: any, index) => {
+            // Construct the object based on mapping
+            const mappedObj: Record<string, any> = {};
+
+            // We need to map from our internal keys (from schema) to the CSV values
+            Object.entries(mapping).forEach(([internalKey, csvHeader]) => {
+                // Determine the value. row[csvHeader] gets the value from the CSV row.
+                // We handle potential undefined if the header doesn't exist in this row
+                mappedObj[internalKey] = row[csvHeader];
+            });
+
+            // Validate using Zod
+            const validation = DeliveryRecordSchema.safeParse(mappedObj);
+
+            if (validation.success) {
+                data.push(validation.data);
+            } else {
+                // Collect detailed error
+                const errorMsg = validation.error.issues.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
+                errors.push({
+                    row: index + 2, // +2 because 1-based and header row
+                    message: errorMsg,
+                    data: row
+                });
+            }
+        });
+
+        return { data, errors };
+    } catch (e) {
+        console.error("Mapped CSV Parse Error:", e);
+        return { data: [], errors: [{ row: 0, message: e instanceof Error ? e.message : 'Unknown parse error', data: null }] };
     }
 };

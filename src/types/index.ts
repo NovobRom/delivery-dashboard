@@ -1,3 +1,6 @@
+import { DeliveryRecord } from './schema';
+export * from './schema';
+
 // Core data types
 export interface CourierData {
     id: number;
@@ -45,7 +48,7 @@ export interface SummaryStatistics {
 }
 
 export interface ParseResult {
-    data: CourierData[];
+    data: CourierData[] | DeliveryRecord[];
     error: string | null;
 }
 
@@ -92,7 +95,15 @@ export interface DataState {
     fullData: CourierData[];
     error: string | null;
     isLoading: boolean;
+    deliveryRecords: DeliveryRecord[]; // New field for robust import
     setRawData: (data: string) => void;
+    importMappedData: (file: string, mapping: Record<string, string>) => void;
+    // Wizard State
+    isWizardOpen: boolean;
+    pendingFile: string | null;
+    csvHeaders: string[];
+    openWizard: (file: string, headers: string[]) => void;
+    closeWizard: () => void;
 }
 
 export interface FiltersState {
