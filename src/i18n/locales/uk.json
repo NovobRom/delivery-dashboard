@@ -26,7 +26,12 @@
         "regionPerformance": "Продуктивність регіону",
         "allRegions": "Всі активні регіони",
         "noSelection": "Нічого не обрано",
-        "regionsSelected": "Регіонів обрано"
+        "regionsSelected": "Регіонів обрано",
+        "loaded": "Завантажено",
+        "handDelivery": "В руки %",
+        "safePlace": "SafePlace %",
+        "addressCoverage": "Посилок на адресу",
+        "activeCouriers": "Активні кур'єри"
     },
     "charts": {
         "successRateTrend": "Тренд успішності",
@@ -34,7 +39,22 @@
         "weeklyPerformance": "Тижнева агрегована продуктивність",
         "monthlyPerformance": "Місячна агрегована продуктивність",
         "problemAreas": "Проблемні зони",
-        "topCouriersNoReason": "Топ кур'єрів з поверненнями 'без причини'"
+        "topCouriersNoReason": "Топ кур'єрів з поверненнями 'без причини'",
+        "hand": "В руки",
+        "safeplace": "SafePlace",
+        "undelivered": "Не доставлено",
+        "deliveryMethods": "Методи доставки",
+        "regionalComparison": "Порівняння регіонів",
+        "courierProductivity": "Теплова карта кур'єрів",
+        "volumeTrend": "Динаміка обсягів",
+        "exceptionAnalysis": "Аналіз винятків (Без причини)"
+    },
+    "summary": {
+        "title": "Зведення за період",
+        "dateRange": "Діапазон дат",
+        "medianRate": "Медіана успішності",
+        "bestDay": "Найкращий день",
+        "worstDay": "Найгірший день"
     },
     "leaderboard": {
         "title": "Рейтинг кур'єрів",
@@ -57,7 +77,12 @@
         "daily": "Денні",
         "weekly": "Тижневі",
         "monthly": "Місячні",
-        "selected": "Обрано"
+        "selected": "Обрано",
+        "total": "Всього",
+        "successRate": "Відсоток успіху",
+        "noReason": "Без причини",
+        "undelivered": "Не доставлено",
+        "delivered": "Доставлено"
     },
     "footer": {
         "copyright": "Всі права захищені",

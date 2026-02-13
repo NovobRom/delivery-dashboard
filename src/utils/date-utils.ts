@@ -46,7 +46,7 @@ export const getDateRangeBounds = (rangeType: string): { start: Date; end: Date 
         }
 
         case 'this_week': {
-            const { year: cy, week: cw } = getWeekNumber(today);
+            // const { year: cy, week: cw } = getWeekNumber(today);
             // Simplified - would need more complex logic for exact week bounds
             return null;
         }

@@ -15,6 +15,40 @@ export interface CourierData {
     successRate: number;
 }
 
+export interface RegionalStats {
+    region: string;
+    successRate: number;
+    volume: number;
+}
+
+export interface HeatmapCell {
+    courier: string;
+    date: string;
+    rate: number;
+}
+
+export interface DeliveryMethodBreakdown {
+    hand: number;
+    safeplace: number;
+    undelivered: number;
+    total: number;
+}
+
+export interface SummaryStatistics {
+    medianRate: number;
+    bestDay: { date: string; rate: number } | null;
+    worstDay: { date: string; rate: number } | null;
+    totalRows: number;
+    totalDays: number;
+    uniqueCouriers: number;
+    dateRange: { start: string; end: string } | null;
+}
+
+export interface ParseResult {
+    data: CourierData[];
+    error: string | null;
+}
+
 export interface CourierStats {
     name: string;
     delivered: number;
@@ -56,6 +90,7 @@ export interface DateFilterOption {
 export interface DataState {
     rawData: string;
     fullData: CourierData[];
+    error: string | null;
     setRawData: (data: string) => void;
 }
 

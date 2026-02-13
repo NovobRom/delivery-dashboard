@@ -26,7 +26,12 @@
         "regionPerformance": "Region Performance",
         "allRegions": "All Active Regions",
         "noSelection": "No Selection",
-        "regionsSelected": "Regions Selected"
+        "regionsSelected": "Regions Selected",
+        "loaded": "Loaded Parcels",
+        "handDelivery": "Hand Delivery %",
+        "safePlace": "SafePlace %",
+        "addressCoverage": "Avg Parcels/Address",
+        "activeCouriers": "Active Couriers"
     },
     "charts": {
         "successRateTrend": "Success Rate Trend",
@@ -34,7 +39,22 @@
         "weeklyPerformance": "Weekly aggregated performance",
         "monthlyPerformance": "Monthly aggregated performance",
         "problemAreas": "Problem Areas",
-        "topCouriersNoReason": "Top couriers with 'No Reason' returns"
+        "topCouriersNoReason": "Top couriers with 'No Reason' returns",
+        "hand": "Hand",
+        "safeplace": "SafePlace",
+        "undelivered": "Undelivered",
+        "deliveryMethods": "Delivery Method Breakdown",
+        "regionalComparison": "Regional Comparison",
+        "courierProductivity": "Courier Productivity Heatmap",
+        "volumeTrend": "Volume Trend",
+        "exceptionAnalysis": "Exception Analysis (No Reason)"
+    },
+    "summary": {
+        "title": "Period Summary",
+        "dateRange": "Date Range",
+        "medianRate": "Median Success Rate",
+        "bestDay": "Best Performance Day",
+        "worstDay": "Worst Performance Day"
     },
     "leaderboard": {
         "title": "Courier Leaderboard",
@@ -57,7 +77,12 @@
         "daily": "Daily",
         "weekly": "Weekly",
         "monthly": "Monthly",
-        "selected": "Selected"
+        "selected": "Selected",
+        "total": "Total",
+        "successRate": "Success Rate",
+        "noReason": "No Reason",
+        "undelivered": "Undelivered",
+        "delivered": "Delivered"
     },
     "footer": {
         "copyright": "All rights reserved",

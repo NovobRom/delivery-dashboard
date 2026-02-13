@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { FiltersState, DateRangeType, CustomDateRange, AggregationMode } from '@types/index';
+import type { FiltersState, DateRangeType, CustomDateRange, AggregationMode } from '@/types/index';
 
 export const useFiltersStore = create<FiltersState>()(
     persist(

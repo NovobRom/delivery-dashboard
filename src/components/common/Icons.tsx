@@ -1,4 +1,4 @@
-import type { IconProps } from '@types/index';
+import type { IconProps } from '@/types/index';
 
 export const Icons = {
     BarChart2: (props: IconProps) => (

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { SettingsState } from '@types/index';
+import type { SettingsState } from '@/types/index';
 
 export const useSettingsStore = create<SettingsState>()(
     persist(
